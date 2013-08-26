@@ -1,4 +1,8 @@
 <?php
+namespace HL7;
+
+use \InvalidArgumentException;
+
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 // +----------------------------------------------------------------------+
 // | PHP version 4                                                        |
@@ -18,9 +22,9 @@
 //
 // $Id: Segment.php,v 1.6 2004/07/05 08:57:28 wyldebeast Exp $
 
-class Net_HL7_Segment {
+class Segment {
 
-    var $_fields;
+    public $_fields;
 
     /**
      * Create an instance of this segment. A segment may be created with just
@@ -43,6 +47,7 @@ class Net_HL7_Segment {
      *
      * @version    0.10
      * @author     D.A.Dokter <dokter@w20e.com>
+     * @throws InvalidArgumentException
      * @access     public
      * @category   Networking
      * @package    Net_HL7
@@ -170,4 +175,3 @@ class Net_HL7_Segment {
         return $this->_fields[0];
     }
 }
-?>

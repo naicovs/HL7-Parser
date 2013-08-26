@@ -1,4 +1,5 @@
 <?php
+namespace HL7\Segments;
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 // +----------------------------------------------------------------------+
 // | PHP version 4                                                        |
@@ -18,8 +19,7 @@
 //
 // $Id: MSH.php,v 1.8 2004/07/05 15:41:29 wyldebeast Exp $
 
-require_once 'Net/HL7/Segment.php';
-require_once 'Net/HL7.php';
+use HL7\Segment;
 
 /**
  * MSH (message header) segment class
@@ -50,7 +50,7 @@ require_once 'Net/HL7.php';
  * @package    Net_HL7
  * @license    http://www.php.net/license/3_0.txt  PHP License 3.0
  */
-class Net_HL7_Segments_MSH extends Net_HL7_Segment {
+class MSH extends Segment {
 
     /**
      * Create an instance of the MSH segment.
@@ -134,5 +134,3 @@ class Net_HL7_Segments_MSH extends Net_HL7_Segment {
     }
 
 }
-
-?>

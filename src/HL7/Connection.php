@@ -1,4 +1,5 @@
 <?php
+namespace HL7;
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 // +----------------------------------------------------------------------+
 // | PHP version 4                                                        |
@@ -18,8 +19,8 @@
 //
 // $Id: Connection.php,v 1.7 2004/08/06 07:38:54 wyldebeast Exp $
 
-require_once 'Net/HL7/Message.php';
-require_once 'Net/Socket.php';
+use \InvalidArgumentException;
+
 
 /**
  * Usage:
@@ -62,22 +63,19 @@ require_once 'Net/Socket.php';
  * @package    Net_HL7
  * @license    http://www.php.net/license/3_0.txt  PHP License 3.0
  */
-class Net_HL7_Connection {
+class Connection {
 
     var $_HANDLE;
     var $_MESSAGE_PREFIX;
     var $_MESSAGE_SUFFIX;
 
-
     /**
      * Creates a connection to a HL7 server, or returns undef when a
      * connection could not be established.are:
      *
-     * @param mixed Host to connect to
-     * @param int Port to connect to
-     * @return boolean
+     * @param \Net_Socket $socket
      */
-    public function __construct(Net_Socket $socket)
+    public function __construct(\Net_Socket $socket)
     {
         $this->setSocket($socket);
         $this->_MESSAGE_PREFIX = "\013";
@@ -86,20 +84,25 @@ class Net_HL7_Connection {
         return true;
     }
 
-    public function setSocket(Net_Socket $socket) {
+    public function setSocket(\Net_Socket $socket) {
         $this->_HANDLE = $socket;
     }
 
     /**
-     * Sends a Net_HL7_Message object over this connection.
+     * Sends a Message object over this connection.
      *
-     * @param object Instance of Net_HL7_Message
-     * @return object Instance of Net_HL7_Message
+     * @param Message $req
+     * @return Message
      * @access public
-     * @see Net_HL7_Message
+     * @throws InvalidArgumentException
+     * @see Message
      */
     function send($req)
     {
+        if (!($req instanceof Message)) {
+            throw new InvalidArgumentException("\$req must be an instance of \\Net\\HL7\\Message");
+        }
+
         $handle = $this->_HANDLE;
         $hl7Msg = $req->toString();
 
@@ -118,7 +121,7 @@ class Net_HL7_Connection {
         $data = preg_replace("/^" . $this->_MESSAGE_PREFIX . "/", "", $data);
         $data = preg_replace("/" . $this->_MESSAGE_SUFFIX . "$/", "", $data);
 
-        $resp = new Net_HL7_Message($data);
+        $resp = new Message($data);
 
         return $resp;
     }

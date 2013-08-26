@@ -1,4 +1,5 @@
 <?php
+namespace HL7;
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 // +----------------------------------------------------------------------+
 // | PHP version 5                                                        |
@@ -34,7 +35,7 @@
  * @package    Net_HL7
  * @license    http://www.php.net/license/3_0.txt  PHP License 3.0
  */
-class Net_HL7 {
+class HL7 {
 
     /**
      * Holds all global HL7 settings.

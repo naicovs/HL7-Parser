@@ -1,4 +1,5 @@
 <?php
+namespace HL7;
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 // +----------------------------------------------------------------------+
 // | PHP version 4                                                        |
@@ -18,9 +19,8 @@
 //
 // $Id: Message.php,v 1.8 2004/08/06 07:38:54 wyldebeast Exp $
 
-require_once 'Net/HL7/Segment.php';
-require_once 'Net/HL7.php';
 
+use \RuntimeException;
 
 /**
  * Class specifying the HL7 message, both request and response.
@@ -41,23 +41,23 @@ require_once 'Net/HL7.php';
  * @package    Net_HL7
  * @license    http://www.php.net/license/3_0.txt  PHP License 3.0
  */
-class Net_HL7_Message {
+class Message {
 
     /**
      * Array holding all segements of this message.
      */
-    var $_segments;
+    public $_segments;
 
     /**
      * local value for segment separator
      */
-    var $_segmentSeparator;
-    var $_fieldSeparator;
-    var $_componentSeparator;
-    var $_subcomponentSeparator;
-    var $_repetitionSeparator;
-    var $_escapeChar;
-    var $_hl7Version;
+    public $_segmentSeparator;
+    public $_fieldSeparator;
+    public $_componentSeparator;
+    public $_subcomponentSeparator;
+    public $_repetitionSeparator;
+    public $_escapeChar;
+    public $_hl7Version;
 
 
     /**
@@ -81,6 +81,8 @@ class Net_HL7_Message {
      *
      * If the message couldn't be created, for example due to a erroneous HL7
      * message string, an error is raised.
+     *
+     * @throws RuntimeException
      */
     public function __construct($msgStr = "", $hl7Globals = array())
     {
@@ -175,21 +177,21 @@ class Net_HL7_Message {
                     (count($comps) == 1) ? ($fields[$j] = $comps[0]) : ($fields[$j] = $comps);
                 }
 
-                $seg;
+                $seg = null;
                 $segClass = "Net_HL7_Segments_$name";
 
                 // Let's see whether it's the a special segment
                 //
-                if (@include_once "Net/HL7/Segments/$name.php") {
+                if (class_exists('Net\\HL7\\Segments\\' . $name)) {
                     array_unshift($fields, $this->_fieldSeparator);
 
                     $seg = new $segClass($fields);
                 } else {
-                    $seg = new Net_HL7_Segment($name, $fields);
+                    $seg = new Segment($name, $fields);
                 }
 
                 if (!$seg) {
-                    trigger_error("Segment not created", E_USER_WARNING);
+                    throw new RuntimeException("Segment not created");
                 }
 
                 $this->addSegment($seg);
@@ -204,15 +206,16 @@ class Net_HL7_Message {
      * The segment will be added to the end of the message. The
      * segment should be an instance of Net_HL7_Segment.
      *
-     * @param object An instance of Net_HL7_Segment
+     * @param Segment
      * @return boolean
      * @access public
-     * @see Net_HL7_Segment
+     * @throws InvalidArgumentException
+     * @see Segment
      */
     public function addSegment($segment)
     {
-        if (!is_a($segment, "Net_HL7_Segment")) {
-            trigger_error("The object is not a Net_HL7_Segment", E_USER_WARNING);
+        if (!($segment instanceof Segment)) {
+            throw new InvalidArgumentException("The object is not an instance of Segment");
         }
 
         if (count($this->_segments) == 0) {
@@ -235,18 +238,17 @@ class Net_HL7_Message {
      * @param int Index where segment is inserted
      * @return boolean
      * @access public
+     * @throws InvalidArgumentException
      * @see Net_HL7_Segment
      */
-        function insertSegment($segment, $idx = "")
+    public function insertSegment($segment, $idx = null)
     {
         if ((!$idx) || ($idx > count($this->_segments))) {
-            trigger_error("Index out of range", E_USER_WARNING);
-            return false;
+            throw new InvalidArgumentException("Index '$idx' is out of range");
         }
 
-        if (!is_a($segment, "Net_HL7_Segment")) {
-            trigger_error("The object is not a Net_HL7_Segment", E_USER_WARNING);
-            return false;
+        if (!($segment instanceof Segment)) {
+            throw new InvalidArgumentException("The object is not an instance of Segment");
         }
 
         if ($idx == 0) {
@@ -273,9 +275,9 @@ class Net_HL7_Message {
      * Segment count within the message starts at 0.
      *
      * @param int Index where segment is inserted
-     * @return object An instance of Net_HL7_Segment
+     * @return Segment
      * @access public
-     * @see Net_HL7_Segment
+     * @see Segment
      */
     public function getSegmentByIndex($index)
     {
@@ -337,22 +339,21 @@ class Net_HL7_Message {
      * characters and hl7 version, based on MSH(1), MSH(2) and
      * MSH(12).
      *
-     * @param object An instance of Net_HL7_Segment
+     * @param Segment
      * @param int Index where segment is set
      * @return boolean
      * @access public
-     * @see Net_HL7_Segment
+     * @throws InvalidArgumentException
+     * @see Segment
      */
     public function setSegment($segment, $idx)
     {
         if ((!isset($idx)) || $idx > count($this->_segments)) {
-            trigger_error("Index out of range", E_USER_WARNING);
-            return false;
-        };
+            throw new InvalidArgumentException("Index '$idx' is out of range");
+        }
 
-        if (!is_a($segment, "Net_HL7_Segment")) {
-            trigger_error("The object is not a Net_HL7_Segment", E_USER_WARNING);
-            return false;
+        if (!($segment instanceof Segment)) {
+            throw new InvalidArgumentException("The object is not an instance of Segment");
         }
 
         if ($segment->getName() == "MSH" && $idx == 0) {
@@ -371,10 +372,15 @@ class Net_HL7_Message {
      * @param object An instance of Net_HL7_Segment
      * @return boolean
      * @access private
-     * @see Net_HL7_Segment
+     * @throws InvalidArgumentException
+     * @see Segment
      */
     public function _resetCtrl($segment)
     {
+        if (!($segment instanceof Segment)) {
+            throw new InvalidArgumentException("The object is not an instance of Segment");
+        }
+
         if ($segment->getField(1)) {
             $this->_fieldSeparator = $segment->getField(1);
         }
