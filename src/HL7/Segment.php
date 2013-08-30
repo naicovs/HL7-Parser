@@ -60,7 +60,7 @@ class Segment {
         // Is the name 3 upper case characters?
         //
         if ((!$name) || (strlen($name) != 3) || (strtoupper($name) != $name)) {
-            throw new InvalidArgumentException("Name should be 3 characters, uppercase");
+            throw new InvalidArgumentException("Name should be 3 characters, uppercase. Name provided: {$name}");
         }
 
         $this->_fields = array();
