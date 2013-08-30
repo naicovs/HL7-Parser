@@ -1,22 +1,20 @@
 <?php
 
-require_once "Net/HL7/Message.php";
-require_once "Net/HL7/Segment.php";
-require_once "Net/HL7/Segments/MSH.php";
-require_once "Net/HL7.php";
 require_once 'PHPUnit/Framework/TestCase.php';
 
 class MessageTest extends PHPUnit_Framework_TestCase {
 
+//    public function test() {}
+
     public function test() {
         # Simple constructor
         #
-        $msg = new Net_HL7_Message();
-        $seg1 = new Net_HL7_Segment("PID");
+        $msg = new HL7\Message();
+        $seg1 = new HL7\Segment("PID");
 
         $seg1->setField(2, "Foo");
 
-        $msg->addSegment(new Net_HL7_Segments_MSH());
+        $msg->addSegment(new HL7\Segments\MSH());
         $msg->addSegment($seg1);
 
         $seg0 = $msg->getSegmentByIndex(0);
@@ -33,7 +31,7 @@ class MessageTest extends PHPUnit_Framework_TestCase {
         $segX = $msg->getSegmentByIndex(0);
         $this->assertTrue($segX->getField(3) == "XXX", "3d field of MSH");
 
-        $msg = new Net_HL7_Message("MSH|^~\\&|1|\rPID|||xxx|\r");
+        $msg = new HL7\Message("MSH|^~\\&|1|\rPID|||xxx|\r");
 
         $seg0 = $msg->getSegmentByIndex(0);
 
@@ -45,7 +43,7 @@ class MessageTest extends PHPUnit_Framework_TestCase {
 
         # Constructor with components and subcomponents
         #
-        $msg = new Net_HL7_Message("MSH|^~\\&|1|\rPID|||xx^x&y&z^yy^zz|\r");
+        $msg = new HL7\Message("MSH|^~\\&|1|\rPID|||xx^x&y&z^yy^zz|\r");
 
         $seg1 = $msg->getSegmentByIndex(1);
         $comps = $seg1->getField(3);
@@ -55,7 +53,7 @@ class MessageTest extends PHPUnit_Framework_TestCase {
 
         # Trying different field separator
         #
-        $msg = new Net_HL7_Message("MSH*^~\\&*1\rPID***xxx\r");
+        $msg = new HL7\Message("MSH*^~\\&*1\rPID***xxx\r");
 
         $this->assertTrue($msg->toString() == "MSH*^~\&*1*\rPID***xxx*\r", "String representation of message with * as field separator");
 
@@ -65,7 +63,7 @@ class MessageTest extends PHPUnit_Framework_TestCase {
 
         # Trying different field sep and control chars
         #
-        $msg = new Net_HL7_Message("MSH*.%#@*1\rPID***x.x@y@z.z\r");
+        $msg = new HL7\Message("MSH*.%#@*1\rPID***x.x@y@z.z\r");
 
         $seg1 = $msg->getSegmentByIndex(1);
         $comps = $seg1->getField(3);
@@ -77,7 +75,7 @@ class MessageTest extends PHPUnit_Framework_TestCase {
         #
         //$this->assertTrue(! defined(new Net::HL7::Message("MSH|^~\\&*1\rPID|||xxx\r")), "Field separator not repeated");
 
-        $seg2 = new Net_HL7_Segment("XXX");
+        $seg2 = new HL7\Segment("XXX");
 
         $msg->addSegment($seg2);
 
@@ -87,8 +85,8 @@ class MessageTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue($seg1->getName() == $seg2->getName(), "Add/remove segment");
 
-        $seg3 = new Net_HL7_Segment("YYY");
-        $seg4 = new Net_HL7_Segment("ZZZ");
+        $seg3 = new HL7\Segment("YYY");
+        $seg4 = new HL7\Segment("ZZZ");
 
         $msg->insertSegment($seg3, 1);
         $msg->insertSegment($seg4, 1);
@@ -103,12 +101,7 @@ class MessageTest extends PHPUnit_Framework_TestCase {
         $msg->removeSegmentByIndex(1);
         $msg->removeSegmentByIndex(6);
 
-        $seg5 = new Net_HL7_Segment("ZZ1");
-
-        # This shouldn't be possible
-        @$msg->insertSegment($seg5, 3);
-
-        $this->assertTrue(! $msg->getSegmentByIndex(3), "Erroneous insert");
+        $seg5 = new HL7\Segment("ZZ1");
 
         $msg->insertSegment($seg5, 2);
 
@@ -124,7 +117,7 @@ class MessageTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue(count($msg->getSegmentsByName("MSH")) == 1, "Number of MSH segments");
 
-        $msh2 = new Net_HL7_Segments_MSH();
+        $msh2 = new HL7\Segments\MSH();
 
         $msg->addSegment($msh2);
 
@@ -133,9 +126,9 @@ class MessageTest extends PHPUnit_Framework_TestCase {
 
         # Fumble 'round with ctrl chars
         #
-        $msg = new Net_HL7_Message();
+        $msg = new HL7\Message();
 
-        $msh = new Net_HL7_Segments_MSH(array());
+        $msh = new HL7\Segments\MSH(array());
 
         $msh->setField(1, "*");
         $msh->setField(2, "abcd");
@@ -149,7 +142,7 @@ class MessageTest extends PHPUnit_Framework_TestCase {
 
         $this->assertTrue($msg->toString() == "MSH|^~\\&|\r", "Change MSH after add");
 
-        $msh = new Net_HL7_Segments_MSH(array());
+        $msh = new HL7\Segments\MSH(array());
 
         $msh->setField(1, "*");
         $msh->setField(2, "abcd");
@@ -159,13 +152,13 @@ class MessageTest extends PHPUnit_Framework_TestCase {
 
         $str = 'MSH|^~\&|CodeRyte HL7|CodeRyte HQ|VISION|MISYS|200404061744||DFT^P03|TC-2743|P^T|2.3|||AL|NE||ASCII||| |';
 
-        $msg = new Net_HL7_Message($str);
+        $msg = new HL7\Message($str);
 
         $this->assertTrue($msg->toString(1) == "$str\n", "Message from string and to string with subcomponents");
 
         // Segment as string
-        $msg = new Net_HL7_Message("MSH*^~\\&*1\rPID*a^b^c*a^b1&b2^c*xxx\r");
-        $xxx = new Net_HL7_Segment("XXX");
+        $msg = new HL7\Message("MSH*^~\\&*1\rPID*a^b^c*a^b1&b2^c*xxx\r");
+        $xxx = new HL7\Segment("XXX");
         $xxx->setField(2, array("a", array("b1", "b2"), "c"));
 
         $msg->addSegment($xxx);
@@ -178,5 +171,15 @@ class MessageTest extends PHPUnit_Framework_TestCase {
         // Get segment field as string
         $this->assertTrue($msg->getSegmentFieldAsString(0, 3) == "1", "MSH(3) as string");
         $this->assertTrue($msg->getSegmentFieldAsString(1, 2) == "a^b1&b2^c", "PID(2) as string");
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testBadSegment()
+    {
+        $seg5 = new HL7\Segment("ZZ1");
+        $msg = new HL7\Message("MSH*.%#@*1\rPID***x.x@y@z.z\r");
+        $msg->insertSegment($seg5);
     }
 }

@@ -1,7 +1,5 @@
 <?php
 
-require_once "Net/HL7/Segment.php";
-require_once "Net/HL7.php";
 require_once 'PHPUnit/Framework/TestCase.php';
 
 class SegmentTest extends PHPUnit_Framework_TestCase {
@@ -9,9 +7,9 @@ class SegmentTest extends PHPUnit_Framework_TestCase {
     public function test() {
         # Basic stuff
         #
-        $hl7 = new Net_HL7();
+        $hl7 = new \HL7\HL7();
 
-        $seg = new Net_HL7_Segment("PID");
+        $seg = new \HL7\Segment("PID");
         $seg->setField(0, "XXX");
         $seg->setField(3, "XXX");
 
@@ -26,7 +24,7 @@ class SegmentTest extends PHPUnit_Framework_TestCase {
         //$this->assertTrue(! defined(new Net::HL7::Segment("xxx")), "Segment constructor with lowercase name");
 
 
-        $seg = new Net_HL7_Segment("DG1", array(4,3,2,array(1,2,3),0));
+        $seg = new \HL7\Segment("DG1", array(4,3,2,array(1,2,3),0));
 
         $this->assertTrue($seg->getField(3) == "2", "Constructor with array ref");
 
@@ -37,7 +35,7 @@ class SegmentTest extends PHPUnit_Framework_TestCase {
 
         # Field setters/getters
         #
-        $seg = new Net_HL7_Segment("DG1");
+        $seg = new \HL7\Segment("DG1");
 
         $seg->setField(3, array(1, 2, 3));
         $seg->setField(8, $hl7->getNull());
