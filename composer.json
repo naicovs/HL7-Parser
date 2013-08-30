@@ -1,10 +1,13 @@
 {
-    "name": "mrferos/hl7",
+    "name": "mrferos/hl7-parser",
+    "type": "library",
+    "keywords": ["hl7", "parsing"],
     "description": "A port of the PEAR Net_HL7 library to PHP5.3+",
     "authors": [
         {
             "name": "Andres Galindo",
-            "email": "me@andresgalindo.us"
+            "email": "me@andresgalindo.us",
+            "role": "Developer"
         }
     ],
     "require": {
