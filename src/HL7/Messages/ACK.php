@@ -1,4 +1,9 @@
 <?php
+namespace HL7\Messages;
+
+use HL7\Message;
+use HL7\Segments;
+use HL7\Segment;
 /* vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4: */
 // +----------------------------------------------------------------------+
 // | PHP version 4                                                        |
@@ -18,7 +23,7 @@
 //
 // $Id: ACK.php,v 1.5 2004/07/05 08:57:28 wyldebeast Exp $
 
-class Net_HL7_Messages_ACK extends Net_HL7_Message {
+class ACK extends Message {
 
     var $_ACK_TYPE;
 
@@ -47,17 +52,17 @@ class Net_HL7_Messages_ACK extends Net_HL7_Message {
             $msh = $req->getSegmentByIndex(0);
 
             if ($msh) {
-                $msh = new Net_HL7_Segments_MSH($msh->getFields(1));
+                $msh = new Segments\MSH($msh->getFields(1));
             }
             else {
-                $msh = new Net_HL7_Segments_MSH();
+                $msh = new Segments\MSH();
             }
         }
         else {
-            $msh = new Net_HL7_Segments_MSH();
+            $msh = new Segments\MSH();
         }
 
-        $msa = new Net_HL7_Segment("MSA");
+        $msa = new Segment("MSA");
 
         // Determine acknowledge mode: normal or enhanced
         //
@@ -137,5 +142,3 @@ class Net_HL7_Messages_ACK extends Net_HL7_Message {
         return true;
     }
 }
-
-?>
