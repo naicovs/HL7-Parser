@@ -1,7 +1,8 @@
 <?php
 
+require_once __DIR__ . '/../src/HL7/HL7.php';
+require_once __DIR__ . '/../src/HL7/Segment.php';
 require_once 'PHPUnit/Framework/TestCase.php';
-
 class SegmentTest extends PHPUnit_Framework_TestCase {
 
     public function test() {
