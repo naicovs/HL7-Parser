@@ -21,6 +21,7 @@ namespace HL7;
 
 
 use \RuntimeException;
+use \InvalidArgumentException;
 
 /**
  * Class specifying the HL7 message, both request and response.
@@ -136,7 +137,7 @@ class Message {
             //
             if ($fldSep != $fldSepCtrl) {
 
-                trigger_error("Not a valid message: field separator invalid", E_USER_ERROR);
+                throw new RuntimeException("Not a valid message: field separator invalid");
             }
 
             // Set field separator based on control segment
@@ -178,11 +179,11 @@ class Message {
                 }
 
                 $seg = null;
-                $segClass = "Net_HL7_Segments_$name";
+                $segClass = "HL7\\Segments\\$name";
 
                 // Let's see whether it's the a special segment
                 //
-                if (class_exists('Net\\HL7\\Segments\\' . $name)) {
+                if (class_exists('HL7\\Segments\\' . $name)) {
                     array_unshift($fields, $this->_fieldSeparator);
 
                     $seg = new $segClass($fields);
@@ -204,7 +205,7 @@ class Message {
      * Add a segment.
      *
      * The segment will be added to the end of the message. The
-     * segment should be an instance of Net_HL7_Segment.
+     * segment should be an instance of HL7\Segment.
      *
      * @param Segment
      * @return boolean
