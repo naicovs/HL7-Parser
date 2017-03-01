@@ -54,7 +54,6 @@ assuming you have an HL7 server on your localhost, listening to port
 12002 (you might want to use the hl7d from the Perl HL7 Toolkit
 package as a simple test server; http://hl7toolkit.sourceforge.net/):
 
-Note: it uses pear/net_socket
 
 ```php
 <?php
@@ -91,4 +90,22 @@ echo "Received answer\n" . $resp->toString(true);
 
 $conn->close();
 ?>
+```
+
+To use composer add this repository to the composer.json 
+file and select dev-master in the require statement.
+Example:
+```
+{
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/naicovs/hl7-parser"
+        }
+    ],
+    "require": {
+        "mrferos/hl7-parser": "dev-master",
+        "pear/net_socket": "^1.0"
+    }
+}
 ```
