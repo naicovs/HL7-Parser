@@ -105,6 +105,7 @@ Example:
     ],
     "require": {
         "mrferos/hl7-parser": "dev-master",
+        "pear/pear": "dev-master"
         "pear/net_socket": "^1.0"
     }
 }
